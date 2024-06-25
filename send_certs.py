@@ -21,7 +21,8 @@ def authenticate():
 def send_email(service, recipient, attachment_path=None):
     # Create a multipart message
     message = MIMEMultipart()
-    message['to'] = recipient
+    message['to'] = recipient # Email recipient
+    # Email subject
     message['subject'] = 'شهادة اتمام حضور برنامج أخصائي الأمن السيبراني - مركز المبدعون'
     
     # Attach the message body
@@ -50,26 +51,28 @@ def send_email(service, recipient, attachment_path=None):
 
     # Send the email
     sent_message = service.users().messages().send(userId="me", body={'raw': raw_message}).execute()
+    # Logging delivery status
     print(f'Sent message to {recipient}. Message Id: {sent_message["id"]}')
 
 def main():
-    # Attach the message body
+    # Authenticate request first
     authenticate()
     service = build('gmail', 'v1', credentials=creds)
 
+    # Read attendance sheet to extract emails
     df = pd.read_excel("attendance.xlsx")
-
-    recipients = ['00mrxgames00@gmail.com']
     
+    # Iterate through attendance rows
     for indx, recipient in df.iterrows():
-    # for indx, recipient in enumerate(recipients):
         try:
-            num = indx + 1
-            attachment_path = f"certificates/{num}_PDFsam_شهادات برنامج أخصائي الامن السيبراني.pdf"  # Update with the path to your attachment
-            print("the index: ", num)
-            print("The email: ", recipient['ar_name'])
+            num = indx + 1 # Start from index 1
+            
+            # define attachment path
+            # Update with the path to your attachment
+            attachment_path = f"certificates/{num}_PDFsam_شهادات برنامج أخصائي الامن السيبراني.pdf"  
+            
+            # Send email synchronously 
             send_email(service, recipient["email"], attachment_path)
-            # send_email(service, recipient, attachment_path)
         except HTTPError as error:
             print(f'An error occurred while sending email to {recipient}: {error}')
 

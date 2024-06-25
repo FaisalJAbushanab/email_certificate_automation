@@ -1,0 +1,9 @@
+# Ignore all venv paths
+venv/
+cred.json
+
+# Ignore all xlsx files
+*.xlsx
+
+# Ignore the certificates subdirectory and its contents
+certificates/
